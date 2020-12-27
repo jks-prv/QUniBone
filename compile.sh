@@ -7,12 +7,20 @@
 . qunibone-platform.env
 . compile-bbb.env
 
+# guard against legacy qunibone-platform.env
+if [ -z "$QUNIBONE_PLATFORM_SUFFIX" ] ; then
+        QUNIBONE_PLATFORM_SUFFIX=$PLATFORM_SUFFIX
+fi
+if [ -z "$QUNIBONE_PLATFORM" ] ; then
+        QUNIBONE_PLATFORM=$MAKE_QUNIBUS
+fi
+
 # makefile_u or makefile_q
-MAKEFILE=makefile$PLATFORM_SUFFIX
+MAKEFILE=makefile$QUNIBONE_PLATFORM_SUFFIX
 
 # Debugging: remote from Eclipse. Compile on BBB is release.
 export MAKE_CONFIGURATION=RELEASE
-export MAKE_QUNIBUS
+export QUNIBONE_PLATFORM
 
 cd 10.03_app_demo/2_src
 

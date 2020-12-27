@@ -179,11 +179,16 @@ void buslatches_c::test_simple_pattern(unsigned pattern, buslatch_c *bl) {
 			break;
 		case 2: // moving ones
 			setval = (1 << idx);
-			idx = (idx + 1) % bl->bitwidth; // period = bitwidth
+			do {
+				idx = (idx+1) & 7 ; // cycle to next settable bit
+			} while (((1 << idx) & bl->bitmask) == 0) ;
+			//		idx = (idx + 1) % bl->bitwidth; // period = bitwidth
 			break;
 		case 3: // moving zeros
 			setval = ~(1 << idx);
-			idx = (idx + 1) % bl->bitwidth; // period = bitwidth
+			do {
+				idx = (idx+1) & 7 ; // cycle to next settable bit
+			} while (((1 << idx) & bl->bitmask) == 0) ;
 			break;
 		case 4: // toggle 0x00 0xff
 			setval = idx & 1 ? 0x00 : 0xff; // period = 2
@@ -347,8 +352,6 @@ void buslatches_c::test_simple_pattern_multi(unsigned pattern) {
 		mailbox->buslatch_exerciser.pattern = (pass_no
 				% MAILBOX_BUSLATCH_EXERCISER_PATTERN_COUNT);
 
-		ARM_DEBUG_PIN0(0)
-		;
 		mailbox_execute(ARM2PRU_BUSLATCH_EXERCISER);
 
 		// check: mailbox readvalues == write values ?
@@ -363,7 +366,6 @@ void buslatches_c::test_simple_pattern_multi(unsigned pattern) {
 				readval = ~readval; // input latches invert
 			readval &= bl->rw_bitmask; // mask out untestable bits
 			if (readval != writeval) {
-				ARM_DEBUG_PIN0(1) ;
 				total_errors++;
 				printf(
 						"Error buslatches_test_simple_pattern_multi(pattern=%d), pass %u, PRU exerciser pattern=%d:\n",
