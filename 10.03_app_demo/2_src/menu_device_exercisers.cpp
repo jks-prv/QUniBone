@@ -115,7 +115,8 @@ void application_c::menu_device_exercisers(const char *menu_code) {
 #if defined(UNIBUS)			
 			printf("pwr                  Simulate UNIBUS power cycle (ACLO/DCLO)\n");
 #elif defined(QBUS)
-			printf("pwr                  Simulate QBUS power cycle (POK/DCOK)\n");
+			printf("h <1|0>              Set/release QBUS HALT, like front panel toggle switch\n");
+			printf("pwr                  Simulate QBUS power cycle (POK/DCOK) like front panel RESTART\n");
 #endif
 			printf("q                    Quit\n");
 		}
@@ -130,6 +131,12 @@ void application_c::menu_device_exercisers(const char *menu_code) {
 				qunibus->init();
 			} else if (!strcasecmp(s_opcode, "pwr")) {
 				qunibus->powercycle();
+#if defined(QBUS)				
+			} else if (!strcasecmp(s_opcode, "h") && n_fields == 2) {
+				uint16_t active ;
+				qunibus->parse_word(s_param[0], &active) ;				
+				qunibus->set_halt(active) ;
+#endif				
 			} else if (!strcasecmp(s_opcode, "dbg") && n_fields == 2) {
 				if (!strcasecmp(s_param[0], "c")) {
 					logger->clear();
@@ -236,7 +243,7 @@ void application_c::menu_device_exercisers(const char *menu_code) {
 						&wordbuffer, 1);
 				printf("DEPOSIT %s <- %06o\n", qunibus->addr2text(addr), wordbuffer);
 				if (timeout)
-					printf("Bus timeout at %s.\n", qunibus->addr2text(qunibus->dma_request->unibus_end_addr));
+					printf("Bus timeout at %s.\n", qunibus->addr2text(qunibus->dma_request->qunibus_end_addr));
 			} else if (!strcasecmp(s_opcode, "e") && n_fields <= 2) {
 				uint16_t wordbuffer;
 				bool timeout=false;

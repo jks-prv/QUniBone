@@ -164,7 +164,11 @@ void application_c::menu_devices(const char *menu_code, bool with_emulated_CPU) 
 	cpu_c *cpu = NULL;
 #endif
 	// create RL11 +  also 4 RL01/02 drives
+#if defined(UNIBUS)
 	RL11_c *RL11 = new RL11_c();
+#elif defined(QBUS)
+	RLV12_c *RL11 = new RLV12_c();
+#endif
 	paneldriver->reset(); // reset I2C, restart worker()
 	// create RK11 + drives
 	rk11_c *RK11 = new rk11_c();
@@ -228,9 +232,10 @@ void application_c::menu_devices(const char *menu_code, bool with_emulated_CPU) 
 			printf("m f [word]           Fill " QUNIBUS_NAME " memory (with 0 or other octal value)\n");
 			printf("m d                  Dump " QUNIBUS_NAME " memory to disk\n");
 			printf(
-					"m ll <filename>      Load memory content from MACRO-11 listing file (boot loader)\n");
+				   "m ll <filename>      Load memory content from MACRO-11 listing file (boot loader)\n");
 			if (strlen(memory_filename))
-				printf("m ll             Reload last memory content from file \"%s\"\n",
+				printf(
+				   "m ll                 Reload last memory content from file \"%s\"\n",
 						memory_filename);
 			printf("m lp <filename>      Load memory content from absolute papertape image\n");
 			printf("m lp                 Reload last memory content from file \"%s\"\n",
@@ -270,7 +275,8 @@ void application_c::menu_devices(const char *menu_code, bool with_emulated_CPU) 
 #if defined(UNIBUS)			
 			printf("pwr                  Simulate UNIBUS power cycle (ACLO/DCLO)\n");
 #elif defined(QBUS)			
-			printf("pwr                  Simulate QBUS power cycle (DCOK/POK)\n");
+			printf("h <1|0>              Set/release QBUS HALT, like front panel toggle switch\n");
+			printf("pwr                  Simulate QBUS power cycle (DCOK/POK) like front panel RESTART\n");
 #endif
 			printf("q                    Quit\n");
 		}
@@ -286,6 +292,12 @@ void application_c::menu_devices(const char *menu_code, bool with_emulated_CPU) 
 				qunibus->init();
 			} else if (!strcasecmp(s_opcode, "pwr")) {
 				qunibus->powercycle() ;
+#if defined(QBUS)				
+			} else if (!strcasecmp(s_opcode, "h") && n_fields == 2) {
+				uint16_t active ;
+				qunibus->parse_word(s_param[0], &active) ;				
+				qunibus->set_halt(active) ;
+#endif				
 			} else if (!strcasecmp(s_opcode, "dbg") && n_fields == 2) {
 				if (!strcasecmp(s_param[0], "c")) {
 					logger->clear();
@@ -463,7 +475,7 @@ void application_c::menu_devices(const char *menu_code, bool with_emulated_CPU) 
 					assert(
 							reg
 									== unibuscontroller->register_by_unibus_address(
-											qunibus->dma_request->unibus_end_addr));
+											qunibus->dma_request->qunibus_end_addr));
 					printf("DEPOSIT reg #%d \"%s\" %s <- %06o\n", reg->index, reg->name,
 							qunibus->addr2text(reg->addr), wordbuffer);
 				} else

@@ -132,6 +132,7 @@ public:
 	~qunibus_c();
 
 	void set_addr_width(unsigned addr_width) ;
+	void assert_addr_width(void) ;
 
 	static char *control2text(uint8_t control);
 	static char *data2text(unsigned val);
@@ -153,6 +154,9 @@ public:
 	bool get_arbitrator_active(void);
 
 	void powercycle(int phase = 3);
+#if defined(QBUS)	
+	void set_halt(bool active) ;
+#endif
 
 #if defined(UNIBUS)
 	void set_address_overlay(uint32_t address_overlay) ;

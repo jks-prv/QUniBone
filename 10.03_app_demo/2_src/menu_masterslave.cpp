@@ -134,7 +134,8 @@ void application_c::menu_masterslave(const char * menu_code, bool with_cpu_arbit
 #if defined(UNIBUS) 
             printf("pwr                         Simulate UNIBUS power cycle (ACLO/DCLO)\n");
 #elif defined(QBUS) 
-            printf("pwr                         Simulate QBUS power cycle (DCOK/POK)\n");
+			printf("h <1|0>                     Set/release QBUS HALT, like front panel toggle switch\n");
+            printf("pwr                         Simulate QBUS power cycle (DCOK/POK) like front panel RESTART\n");
 #endif
 
             printf("dbg c|s|f                   Debug log: Clear, Show on console, dump to File.\n");
@@ -168,6 +169,12 @@ void application_c::menu_masterslave(const char * menu_code, bool with_cpu_arbit
         }
         else if (!strcasecmp(s_opcode, "pwr")) {
             qunibus->powercycle();
+#if defined(QBUS)				
+		} else if (!strcasecmp(s_opcode, "h") && n_fields == 2) {
+			uint16_t active ;
+			qunibus->parse_word(s_param[0], &active) ;				
+			qunibus->set_halt(active) ;
+#endif				
         }
         else if (!strcasecmp(s_opcode, "m") && n_fields == 3) {
             uint32_t start_addr, end_addr;
@@ -251,9 +258,9 @@ void application_c::menu_masterslave(const char * menu_code, bool with_cpu_arbit
                     wordcount = WORDBUFFER_LEN;
             }
             timeout = !qunibus->dma(true, QUNIBUS_CYCLE_DATI, cur_addr, wordbuffer, wordcount);
-            for (i = 0; cur_addr <= qunibus->dma_request->unibus_end_addr; i++, cur_addr += 2)
+            for (i = 0; cur_addr <= qunibus->dma_request->qunibus_end_addr; i++, cur_addr += 2)
                 printf("EXAM %s -> %06o\n", qunibus->addr2text(cur_addr), wordbuffer[i]);
-            cur_addr = qunibus->dma_request->unibus_end_addr;
+            cur_addr = qunibus->dma_request->qunibus_end_addr;
             if (timeout)
                 printf("Bus timeout at %s.\n", qunibus->addr2text(mailbox->dma.cur_addr));
 
@@ -304,9 +311,9 @@ void application_c::menu_masterslave(const char * menu_code, bool with_cpu_arbit
                 wordcount = 1;
             }
             timeout = !qunibus->dma(true, QUNIBUS_CYCLE_DATO, cur_addr, wordbuffer, wordcount);
-            for (i = 0; cur_addr <= qunibus->dma_request->unibus_end_addr; i++, cur_addr += 2)
+            for (i = 0; cur_addr <= qunibus->dma_request->qunibus_end_addr; i++, cur_addr += 2)
                 printf("DEPOSIT %s <- %06o\n", qunibus->addr2text(cur_addr), wordbuffer[i]);
-            cur_addr = qunibus->dma_request->unibus_end_addr;
+            cur_addr = qunibus->dma_request->qunibus_end_addr;
             if (timeout)
                 printf("Bus timeout at %s.\n", qunibus->addr2text(cur_addr));
         }

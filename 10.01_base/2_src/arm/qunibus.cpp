@@ -91,6 +91,20 @@ void qunibus_c::set_addr_width(unsigned addr_width) {
 	addr_space_byte_count = 2 * addr_space_word_count;
 }
 
+// verify user selected address width, 
+// address width is determined by PDP-11 CPU and cannot be guessed.
+// Example: a 16 bit LSI operates in an 18 bit backplane,
+// then QBOne must generate BS7 for addresses >= 160000
+// but  addresses 0.. 777776 are valid.
+void qunibus_c::assert_addr_width(void) {
+#if defined(QBUS)
+	if (!addr_width) {
+		FATAL("Select address width of CPU via global parameter\n(command line -aw 16/28/22)") ;
+	}
+#endif	
+}
+
+
 /* return a 16 bit result, or TIMEOUT
  * result: 0 = timeout, else OK
  */
@@ -401,6 +415,16 @@ void qunibus_c::powercycle(int phase) {
 #endif
 }
 
+#if defined(QBUS)	
+// set state of QBUS  HALT line, like HALT toggle switch on QBUS front panels
+void qunibus_c::set_halt(bool active) {
+	mailbox->initializationsignal.id = INITIALIZATIONSIGNAL_HALT;
+	mailbox->initializationsignal.val = active;
+	mailbox_execute(ARM2PRU_INITALIZATIONSIGNAL_SET);
+}
+#endif
+
+
 #if defined(UNIBUS)
 void qunibus_c::set_address_overlay(uint32_t address_overlay) {
 	mailbox->address_overlay = address_overlay;
@@ -479,7 +503,7 @@ uint32_t qunibus_c::test_sizer(void) {
 	// one big transaction, automatically split in chunks
 	qunibusadapter->DMA(*dma_request, true, QUNIBUS_CYCLE_DATI, addr, testwords,
 			qunibus->addr_space_word_count);
-	return dma_request->unibus_end_addr; // first non implemented address
+	return dma_request->qunibus_end_addr; // first non implemented address
 }
 
 /*
