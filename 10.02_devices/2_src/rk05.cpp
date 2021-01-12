@@ -8,8 +8,6 @@
 
 #include <assert.h>
 
-using namespace std;
-
 #include "logger.hpp"
 #include "utils.hpp"
 #include "timeout.hpp"

@@ -58,13 +58,13 @@ class devexer_c;
 
 // abstract base class for different block addresses
 class blockaddr_c {
-	int dummy; // abstroct block addr;
+	//int dummy; // abstroct block addr;
 };
 
 // an error, which occured on a certain disk/tape block
 class event_c {
-	timeval timestamp;
-	blockaddr_c blockaddr;
+	//timeval timestamp;
+	//blockaddr_c blockaddr;
 	string info;
 };
 

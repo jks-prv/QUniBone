@@ -92,7 +92,7 @@ void application_c::menu_interrupts(const char *menu_code) {
             printf("ll <filename>        Load test program from MACRO-11 listing\n");
             if (test_loaded) {
                 printf(
-                    "i <level> <vector>   Issue interrupt at priority <level> to <<vector> [octal]\n");
+                    "i <level> <vector>   Issue interrupt at priority <level> to <vector> [octal]\n");
                 printf("                     <level> = 0..7, <vector> = 0,4,10,...,374\n");
                 printf(
                     "                     Then interrupts cause print-out, and	processor priority\n");
@@ -189,7 +189,7 @@ void application_c::menu_interrupts(const char *menu_code) {
 
             uint8_t priority_slot = 16; // default
             uint8_t level;
-            uint16_t vector;
+            uint16_t vector = 0;
             if (!qunibus->parse_level(s_param[0], &level))
                 continue;
             if (n_fields == 3) { // i <level> <vector>

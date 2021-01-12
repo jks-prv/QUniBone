@@ -175,7 +175,7 @@ public:
     void on_power_changed(signal_edge_enum aclo_edge, signal_edge_enum dclo_edge) override;
     void on_init_changed(void) override;
   
-    void on_drive_status_changed(storagedrive_c* drive);
+    void on_drive_status_changed(storagedrive_c* drive) override;
 };
 
 #endif

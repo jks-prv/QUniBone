@@ -11,7 +11,7 @@
 #include <memory>
 
 class uda_c;
-class Message;
+struct Message;
 class mscp_drive_c;
 
 // Builds a uint32_t containing the status, flags, and endcode for a response message,

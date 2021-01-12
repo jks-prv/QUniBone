@@ -26,8 +26,6 @@
 
 #include <assert.h>
 
-using namespace std;
-
 #include "logger.hpp"
 #include "timeout.hpp"
 #include "utils.hpp"
