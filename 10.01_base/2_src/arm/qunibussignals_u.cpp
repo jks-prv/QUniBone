@@ -24,6 +24,8 @@
  19-jul-2020	JH  	begin
  */
 
+#ifdef UNIBUS
+
 #include "utils.hpp"
 #include "timeout.hpp" 
 
@@ -184,3 +186,5 @@ bool test_probe(unsigned timeout_ms) {
 			return aborted ;
 
 	}
+
+#endif

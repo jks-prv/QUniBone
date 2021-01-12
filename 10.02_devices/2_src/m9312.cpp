@@ -64,6 +64,8 @@
 
  */
 
+#ifdef UNIBUS
+
 #include <string.h>
 
 #include "mailbox.h"
@@ -401,3 +403,4 @@ void m9312_c::on_init_changed(void) {
 //	}
 }
 
+#endif
