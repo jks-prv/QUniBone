@@ -113,20 +113,23 @@ private:
 	intr_request_c xmtintr_request = intr_request_c(this);
 
 	/*** SLU is infact 2 independend devices: RCV and XMT ***/
-	pthread_cond_t on_after_rcv_register_access_cond = PTHREAD_COND_INITIALIZER;
+	//pthread_cond_t on_after_rcv_register_access_cond = PTHREAD_COND_INITIALIZER;
 	pthread_mutex_t on_after_rcv_register_access_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 	// bits in registers
 	bool rcv_active; /// while a char is receive ... not available
 	bool rcv_done; // char received. INTR. cleared by rdr_enable, access to rbuf, init
-	bool rcv_overrun;bool rcv_intr_enable; // receiver interrupt enabled
+	//bool rcv_overrun;
+	bool rcv_intr_enable; // receiver interrupt enabled
 	bool rcv_or_err; // receiver overrun: rcv_done 1 on receive
 	bool rcv_fr_err; // framing error. high on received BREAK
 	bool rcv_p_err; // parity error
-	uint8_t rcv_buffer;bool rcv_rdr_enb; // reader enable. Cleared by receive or init
+	uint8_t rcv_buffer;
+	bool rcv_rdr_enb; // reader enable. Cleared by receive or init
 
 	pthread_cond_t on_after_xmt_register_access_cond = PTHREAD_COND_INITIALIZER;
-	pthread_mutex_t on_after_xmt_register_access_mutex = PTHREAD_MUTEX_INITIALIZER;bool xmt_ready; // transmitter ready. INTR,  cleared on XBUF access
+	pthread_mutex_t on_after_xmt_register_access_mutex = PTHREAD_MUTEX_INITIALIZER;
+	bool xmt_ready; // transmitter ready. INTR,  cleared on XBUF access
 	bool xmt_intr_enable; // receiver interrupt enabled
 
 	bool xmt_maint; // set 1 for local loop back
@@ -134,7 +137,8 @@ private:
 	uint8_t xmt_buffer;
 
 	// convert between register ansd state variables	
-	bool get_rcv_intr_level(void);bool get_xmt_intr_level(void);
+	bool get_rcv_intr_level(void);
+	bool get_xmt_intr_level(void);
 
 	void set_rcsr_dati_value_and_INTR(void);
 	void eval_rcsr_dato_value(void);

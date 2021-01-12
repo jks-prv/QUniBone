@@ -26,7 +26,7 @@ $(error $(ERROR_BODY))
 endif
 
 PROJ_NAME=pru1
-OBJ_DIR=$(abspath ../../4_deploy_q)
+OBJ_DIR=$(abspath ../../4_deploy$(QUNIBONE_PLATFORM_SUFFIX))
 SHARED_DIR=$(abspath ../shared)
 MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 CURRENT_DIR := $(notdir $(patsubst %/,%,$(dir $(MKFILE_PATH))))
@@ -45,8 +45,7 @@ HEAP_SIZE=0x100
 CFLAGS_OPTIMIZER=--opt_level=3 --opt_for_speed=5 --auto_inline   --c_src_interlist --optimizer_interlist --gen_opt_info=2
 #CFLAGS_OPTIMIZER=--opt_level=3 --auto_inline   --c_src_interlist --optimizer_interlist --gen_opt_info=2
 #Common compiler and linker flags (Defined in 'PRU Optimizing C/C++ Compiler User's Guide)
-CFLAGS=-v3 $(CFLAGS_OPTIMIZER) \
-        -DQBUS  \
+CFLAGS=-v3 $(CFLAGS_OPTIMIZER) $(CCDEFS) \
 	--display_error_number --emit_warnings_as_errors --verbose_diagnostics \
 	--endian=little --hardware_mac=on --obj_directory=$(OBJ_DIR) --pp_directory=$(OBJ_DIR) -ppd -ppa
 
@@ -82,7 +81,7 @@ OBJECTS_COMMON= \
 
 
 # rule to print a variable.
-# use: make print-VARIALBE
+# use: make print-VARIABLE
 print-%  : ; @echo $* = $($*)
 
 # only interested on the image as C-array.
@@ -121,11 +120,12 @@ $(OBJ_DIR)/pru1_code_%_array.c : $(OBJ_DIR)/pru1_code_%.out
 $(OBJ_DIR)/%.object: %.c
 	@mkdir -p $(OBJ_DIR)
 	@echo ''
-	@echo 'Building file: $@'
+	@echo 'Building file: $<'
 	@echo 'Invoking: PRU Compiler'
 	$(PRU_CGT)/bin/clpru --include_path=$(PRU_CGT)/include $(INCLUDE) $(CFLAGS) --output_file=$@ $<
 	@echo Produce assembler listing
-	$(PRU_CGT)/bin/clpru --include_path=$(PRU_CGT)/include $(INCLUDE) $(CFLAGS) --absolute_listing --output_file=$@ $<
+	$(PRU_CGT)/bin/clpru --include_path=$(PRU_CGT)/include $(INCLUDE) $(CFLAGS) --absolute_listing $<
+	sed -i 's/.obj/.object/' $(@:%.object=%.pp)
 	-mv *.asm $(OBJ_DIR)
 
 # Invokes the compiler on all asm files in the directory to create the object files

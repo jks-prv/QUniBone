@@ -24,6 +24,8 @@
  16-jul-2020  JH      refactored from gpio.hpp
  */
 
+#ifdef QBUS
+
 #include "buslatches.hpp"
 
 buslatches_c buslatches; // Singleton
@@ -295,3 +297,4 @@ void buslatches_c::setup() {
 	at(5)->rw_bitmask = 0x1f ; // exclude SRUN
 }
 
+#endif

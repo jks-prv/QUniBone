@@ -24,6 +24,8 @@
  16-jul-2020  JH      refactored from gpio.hpp
  */
 
+#ifdef UNIBUS
+
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
@@ -358,4 +360,4 @@ void buslatches_c::setup() {
 	at(0)->read_inverted = true;
 }
 
-
+#endif

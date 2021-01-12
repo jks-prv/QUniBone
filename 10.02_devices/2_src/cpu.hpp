@@ -92,7 +92,7 @@ public:
 	void on_after_register_access(qunibusdevice_register_t *device_reg, uint8_t unibus_control)
 			override;
 
-	void on_interrupt(uint16_t vector);
+	void on_interrupt(uint16_t vector) override;
 
 };
 

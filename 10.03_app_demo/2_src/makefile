@@ -1,9 +1,4 @@
-# Main switch between UNIBUS and QBUS makefile
+# makefile, makefile_u and makefile_q have been merged into a single file called makefile.
+# But don't rename makefile_u to makefile until changes reviewed and merged to allow diffing the changes.
 
-ifeq ($(QUNIBONE_PLATFORM),UNIBUS)
-        include makefile_u
-else ifeq  ($(QUNIBONE_PLATFORM),QBUS)
-        include makefile_q
-else
-	$(error Set QUNIBONE_PLATFORM to UNIBUS or QBUS!)
-endif
+include makefile_u
